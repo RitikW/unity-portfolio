@@ -1,6 +1,7 @@
 "use client";
 
   import { useEffect, useState } from "react";
+  import { ChevronLeft, ChevronRight } from "lucide-react";
 
   interface Props {
     gifs?: string[];
@@ -16,7 +17,17 @@ export default function ProjectMedia({
   youtubeId,
 }: Props) {
   const media = gifs ?? [];
+  const nextMedia = () => {
+  if (media.length <= 1) return;
 
+  setCurrent((prev) => (prev + 1) % media.length);
+};
+
+const previousMedia = () => {
+  if (media.length <= 1) return;
+
+  setCurrent((prev) => (prev - 1 + media.length) % media.length);
+};
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -33,15 +44,16 @@ export default function ProjectMedia({
   return (
     <div
       className="group relative h-64 overflow-hidden bg-zinc-900"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      // onMouseEnter={() => setPaused(true)}
+      // onMouseLeave={() => setPaused(false)}
+      onClick={nextMedia}
     >
       {/* GIFs */}
       {media.length > 0 ? (
         <img
           src={media[current]}
           alt={`Preview ${current + 1}`}
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          className="h-full w-full object-contain bg-black"
         />
       ) : youtubeId ? (
         <iframe
@@ -72,35 +84,51 @@ export default function ProjectMedia({
           <span className="text-zinc-500">Preview Coming Soon</span>
         </div>
       )}
-
       {/* Gradient */}
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
       {/* Navigation only for multiple GIFs */}
-      {media.length > 1 && (
-        <>
-
-          {/* Dots */}
-          <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-            {media.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrent(index)}
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  current === index
-                    ? "w-8 bg-blue-500"
-                    : "w-2 bg-white/40 hover:bg-white"
-                }`}
-              />
-            ))}
+     {media.length > 1 && (
+      <>
+      <div className="pointer-events-none absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+        {media.map((_, index) => (
+          <div
+            key={index}
+            className={`h-2 rounded-full transition-all duration-300 ${
+              current === index
+                ? "w-8 bg-blue-500"
+                : "w-2 bg-white/40"
+            }`}
+          />
+        ))}
+      </div>
+        {/* Left Half */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            previousMedia();
+          }}
+          className="absolute left-0 top-0 z-20 flex h-full w-1/2 items-center justify-start pl-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        >
+          <div className="rounded-full bg-black/50 p-2 backdrop-blur">
+            <ChevronLeft className="h-6 w-6 text-white" />
           </div>
+        </button>
 
-          {/* Counter */}
-          <div className="absolute right-4 top-4 rounded-full bg-black/60 px-3 py-1 text-xs text-white backdrop-blur-sm">
-            {current + 1} / {media.length}
+        {/* Right Half */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            nextMedia();
+          }}
+          className="absolute right-0 top-0 z-20 flex h-full w-1/2 items-center justify-end pr-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+        >
+          <div className="rounded-full bg-black/50 p-2 backdrop-blur">
+            <ChevronRight className="h-6 w-6 text-white" />
           </div>
-        </>
+        </button>
+      </>
       )}
-    </div>
-  );
+        </div>
+      );
 }

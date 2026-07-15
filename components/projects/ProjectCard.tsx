@@ -11,10 +11,8 @@ type Props = {
 export default function ProjectCard({ project, onClick }: Props) {
   return (
     <div
-      onClick={onClick}
       className="
         group
-        cursor-pointer
         overflow-hidden
         rounded-3xl
         border
@@ -85,15 +83,17 @@ export default function ProjectCard({ project, onClick }: Props) {
         <div className="mt-8 flex items-center justify-between">
 
           <button
+           onClick={onClick}
             className="
               text-blue-400
+              cursor-pointer
               font-semibold
               transition-all
               duration-300
               group-hover:translate-x-2
             "
           >
-            View Case Study →
+            View More Info →
           </button>
 
           {project.github && (
